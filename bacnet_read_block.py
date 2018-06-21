@@ -1,5 +1,8 @@
 import socket
 
+
+from nio.properties import VersionProperty, StringProperty, IntProperty
+from nio.block.base import Block
 from bacpypes.apdu import (AbortPDU, IAmRequest, PropertyReference,
                            ReadAccessSpecification, ReadPropertyACK,
                            ReadPropertyMultipleRequest, ReadPropertyRequest,
@@ -10,10 +13,10 @@ from bacpypes.constructeddata import Any, Array
 from bacpypes.iocb import IOCB
 from bacpypes.object import get_datatype
 from bacpypes.pdu import Address
-from bacpypes.service.device import LocalDeviceObject
+from bacpypes.local.device import LocalDeviceObject
 
 
-class BACNetClientRead(Block):
+class BACNetClientBlock(Block):
 
     version = VersionProperty('0.1.0')
     name = StringProperty(title='BACNet Object Name')
@@ -27,10 +30,17 @@ class BACNetClientRead(Block):
     array_index = IntProperty(title='Data index')
     property = StringProperty(title='Name of Property')
 
-    def configure(self):
+    def __init__(self):
+        super().__init__()
+        self.ldo = None
+        self.this_application = None
+
+    def configure(self, context):
+        super().configure(context)
+
         # bacnet device config
         self.ldo = LocalDeviceObject(
-            objectName=self.name()
+            objectName=self.name(),
             objectIdentifier=int(self.id()),
             maxApduLengthAccepted=int(self.max_apdu_length()),
             segmentationSupported=self.segmentation(),
@@ -72,14 +82,20 @@ class BACNetClientRead(Block):
 
         args_split = args.split()
 
-        self.log_title("Read property {} {} {} {}".format(self.address(), self.))
+        self.log_title("Read property {} {} {} {}".format(
+            self.address(),
+            self.obj_type(),
+            self.obj_instance(),
+            self.property())
+        )
 
         vendor_id = self.vendor_id()
         bacoid = self.id()
 
         try:
             iocb = IOCB(self._build_rp_request(
-                [self.address(), self.obj_type(), self.obj_instance(), self.property()],
+                [self.address(), self.obj_type(),
+                 self.obj_instance(), self.property()],
                 arr_index=self.arr_index(),
                 vendor_id=vendor_id,
                 bacoid=bacoid)
@@ -114,7 +130,6 @@ class BACNetClientRead(Block):
                     value = apdu.propertyValue.cast_out(datatype.subtype)
             else:
                 value = apdu.propertyValue.cast_out(datatype)
-
 
             self.logger.info(
                 "{!r:<20} {!r:<20}".format(

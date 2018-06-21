@@ -1,40 +1,62 @@
 {
-  "namespace/BlockName": {
-    "version": "1.0.0",
-    "description": "Description of the block.",
+  "nio/BACNetClientBlock": {
+    "version": "0.1.0",
+    "description": "Blocks to read from BACNet devices on an IP network",
+    "categories": [],
     "properties": {
-      "<property1>": {
-        "description": "Required description of the property"
+      "address": {
+        "title": "IP Address",
+        "type": "StringType",
+        "description": "IPv4 address of BACnet device",
+        "default": "127.0.0.1"
       },
-      "<property2>": {
-        "default": "Optional metadata with any key.",
-        "description": "Required description of the property"
+      "array_index": {
+        "title": "Data index",
+        "type": "IntType",
+        "description": "Index of data",
+        "default": null
+      },
+      "instance": {
+        "title": "Object Instance Number",
+        "type": "IntType",
+        "description": "BACNet object instance number",
+        "default": null
+      },
+      "max_apdu_length": {
+        "title": "Max APDU Length",
+        "type": "IntType",
+        "description": "Max APDU length in bytes",
+        "default": 1024
+      },
+      "property": {
+        "title": "Name of Property",
+        "type": "StringType",
+        "description": "Name of property to be read",
+        "default": null
+      },
+      "segmentation": {
+        "title": "Segmentation Supported",
+        "type": "StringType",
+        "description": "Segmentation support type",
+        "default": "segmentedBoth"
+      },
+      "vendor_id": {
+        "title": "Client Vendor ID",
+        "type": "IntType",
+        "description": "BACNet device vendor ID",
+        "default": null
       }
     },
     "inputs": {
-      "<input1 | default>": {
-        "description": "Required description of the input"
-      },
-      "<input2>": {
-        "description": "Required description of the input"
+      "default": {
+        "description": "Any list of signals"
       }
     },
     "outputs": {
-      "<output1 | default>": {
-        "description": "Required description of the output"
-      },
-      "<output2>": {
-        "description": "Required description of the output"
+      "default": {
+        "description": ""
       }
     },
-    "commands": {
-      "<command1>": {
-        "description": "Required description of the command",
-        "type": "Optional type and other metadata with any key."
-      },
-      "<command2>": {
-        "description": "Required description of the command"
-      }
-    }
+    "commands": {}
   }
 }
